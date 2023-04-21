@@ -8,8 +8,7 @@ CEP::~CEP() = default;
 CEP::CEP(CEP&&) = default;
 CEP& CEP::operator=(CEP&&) = default;
 
-std::vector<std::vector<uint64_t>> CEP::findTuples(std::vector<std::vector<uint64_t>> lists) {
-    std::vector<std::vector<uint64_t>> results;
+void CEP::findTuples(const std::vector<std::vector<uint64_t>>& lists, std::vector<std::vector<uint64_t>> & results) {
     uint64_t limit = lists.size();
     std::queue<std::pair<std::vector<uint64_t>, std::pair<uint64_t, uint64_t>>> q;
     q.push(std::make_pair(std::vector<uint64_t>{lists[0][0]}, std::make_pair(0, lists[0][0])));
@@ -40,15 +39,9 @@ std::vector<std::vector<uint64_t>> CEP::findTuples(std::vector<std::vector<uint6
             }
         }
     }
-    return results;
 }
 
-std::vector<std::vector<uint64_t>> CEP::sparseFind(const uint64_t * ts, std::vector<std::vector<uint64_t>> conditions) {
-    std::vector<std::vector<uint64_t>> ret(k_);
-    for (uint32_t i = 0; i < k_; i++) {
-        ret[i] = std::vector<uint64_t>();
-        ASSERT_MSG(conditions[i].size() > 0, "condition is empty, should not happen")
-    }
+void CEP::sparseFind(const uint64_t * ts, const std::vector<std::vector<uint64_t>>& conditions, std::vector<std::vector<uint64_t>> & ret) {
     
     std::vector<uint64_t> fingers(k_);
     // ts[conditions[fingers[i]]] must be bigger than or equal to ts[conditions[fingers[i - 1]]]]
@@ -62,7 +55,7 @@ std::vector<std::vector<uint64_t>> CEP::sparseFind(const uint64_t * ts, std::vec
         }
         if (fingers[i] == conditions[i].size()) {
             // we are done
-            return ret;
+            return;
         }
         start_time = ts[conditions[i][fingers[i]]];
     }
@@ -76,7 +69,7 @@ std::vector<std::vector<uint64_t>> CEP::sparseFind(const uint64_t * ts, std::vec
 
         for (uint32_t i = 1; i < k_; i++) {
             if (fingers[i] == conditions[i].size()) {
-                return ret;
+                return;
             }
         }
 
@@ -102,7 +95,8 @@ std::vector<std::vector<uint64_t>> CEP::sparseFind(const uint64_t * ts, std::vec
             end_time = ts[conditions[i][local_finger - 1]] + duration_limits_[i];
         }
 
-        std::vector<std::vector<uint64_t>> expanded_results = findTuples(local_ret);
+        std::vector<std::vector<uint64_t>> expanded_results;
+        findTuples(local_ret, expanded_results);
         
 
         for (auto vec : expanded_results) {
@@ -113,7 +107,7 @@ std::vector<std::vector<uint64_t>> CEP::sparseFind(const uint64_t * ts, std::vec
         fingers[0] ++;
 
         //extend the local_ret into ret
-    }    
+    } 
 }
 
 py::array_t<uint64_t> CEP::do_arrow_batch(std::vector<uintptr_t> arrowArrayPtrs, std::vector<uintptr_t> arrowSchemaPtrs) {
@@ -144,8 +138,13 @@ py::array_t<uint64_t> CEP::do_arrow_batch(std::vector<uintptr_t> arrowArrayPtrs,
         }
         conditions.push_back(vec);
     }
-
-    std::vector<std::vector<uint64_t>> results = CEP::sparseFind(ts, conditions);
+    
+    std::vector<std::vector<uint64_t>> results(k_);
+    for (uint32_t i = 0; i < k_; i++) {
+        results[i] = std::vector<uint64_t>();
+        ASSERT_MSG(conditions[i].size() > 0, "condition is empty, should not happen")
+    }
+    CEP::sparseFind(ts, conditions, results);
 
     // turn the results into a py::array_t<uint32_t>
 

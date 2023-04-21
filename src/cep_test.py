@@ -1,7 +1,7 @@
-import ldb
+import ldbpy
 import polars
 
-cep = ldb.CEP([5,5])
+cep = ldbpy.CEP([5,5])
 from pyarrow.cffi import ffi
 
 ts = polars.from_dict({"ts":[0,1,2,3,4,5,6]}, schema={"ts":polars.UInt64()}).to_arrow()['ts']

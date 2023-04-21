@@ -7,7 +7,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(ldb, m) {
+PYBIND11_MODULE(ldbpy, m) {
     py::class_<TDigest>(m, "TDigest")
         .def(py::init<uint32_t, uint32_t>())
         .def("add", &TDigest::Add)

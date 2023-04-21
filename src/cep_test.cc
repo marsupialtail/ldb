@@ -8,8 +8,7 @@
 
 #define DIFF 5
 
-std::vector<std::vector<uint64_t>> find_tuples(std::vector<std::vector<uint64_t>> lists) {
-    std::vector<std::vector<uint64_t>> results;
+void find_tuples(std::vector<std::vector<uint64_t>> lists, std::vector<std::vector<uint64_t>> & results) {
     uint64_t limit = lists.size();
     std::queue<std::pair<std::vector<uint64_t>, std::pair<uint64_t, uint64_t>>> q;
     q.push(std::make_pair(std::vector<uint64_t>{lists[0][0]}, std::make_pair(0, lists[0][0])));
@@ -40,15 +39,10 @@ std::vector<std::vector<uint64_t>> find_tuples(std::vector<std::vector<uint64_t>
             }
         }
     }
-    return results;
 }
 
-std::vector<std::vector<uint64_t>> simple(int k, int n, uint64_t * ts, std::vector<std::vector<uint64_t>> conditions) {
-    std::vector<std::vector<uint64_t>> ret(k);
-    for (int i = 0; i < k; i++) {
-        ret[i] = std::vector<uint64_t>();
-        ASSERT_MSG(conditions[i].size() > 0, "condition is empty, should not happen")
-    }
+void simple(int k, const uint64_t * ts, const std::vector<std::vector<uint64_t>> conditions, std::vector<std::vector<uint64_t>> & ret) {
+   
     
     std::vector<uint64_t> fingers(k);
     // ts[conditions[fingers[i]]] must be bigger than or equal to ts[conditions[fingers[i - 1]]]]
@@ -62,15 +56,12 @@ std::vector<std::vector<uint64_t>> simple(int k, int n, uint64_t * ts, std::vect
         }
         if (fingers[i] == conditions[i].size()) {
             // we are done
-            return ret;
+            return;
         }
         start_time = ts[conditions[i][fingers[i]]];
     }
 
-    std::vector<std::vector<uint64_t>> local_ret(k);
-    for (int i = 0; i < k; i++) {
-        local_ret[i] = std::vector<uint64_t>();
-    }
+    std::vector<std::vector<uint64_t>> local_ret(k, std::vector<uint64_t>());
 
     while (fingers[0] < conditions[0].size()) {
 
@@ -78,7 +69,7 @@ std::vector<std::vector<uint64_t>> simple(int k, int n, uint64_t * ts, std::vect
         bool done = true;
         for (int i = 1; i < k; i++) {
             if (fingers[i] == conditions[i].size()) {
-                return ret;
+                return;
             }
         }
 
@@ -104,7 +95,8 @@ std::vector<std::vector<uint64_t>> simple(int k, int n, uint64_t * ts, std::vect
             end_time = ts[conditions[i][local_finger - 1]] + DIFF;
         }
 
-        std::vector<std::vector<uint64_t>> expanded_results = find_tuples(local_ret);
+        std::vector<std::vector<uint64_t>> expanded_results;
+        find_tuples(local_ret, expanded_results);
         //print out local_ret
 
         for (auto vec : local_ret) {
@@ -129,13 +121,18 @@ int main()
 {
     // generate a test case for the function simple
     // test case 1: 3 conditions, 3 events, 1 tuple
-    int n = 3;
+    int k = 3;
     uint64_t ts[] = {0, 1, 2, 3, 4, 5, 6};
     std::vector<std::vector<uint64_t>> conditions;
-    conditions.push_back(std::vector<uint64_t>{0});
+    conditions.push_back(std::vector<uint64_t>{0, 1});
     conditions.push_back(std::vector<uint64_t>{1, 4});
     conditions.push_back(std::vector<uint64_t>{2, 5, 6});
-    std::vector<std::vector<uint64_t>> ret = simple(3, n, ts, conditions);
+    std::vector<std::vector<uint64_t>> ret(k);
+    for (int i = 0; i < k; i++) {
+        ret[i] = std::vector<uint64_t>();
+        ASSERT_MSG(conditions[i].size() > 0, "condition is empty, should not happen")
+    }
+    simple(k, ts, conditions, ret);
     for (auto vec : ret) {
         for (auto i : vec) {
             std::cout << i << " ";

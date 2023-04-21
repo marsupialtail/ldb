@@ -20,8 +20,8 @@ class CEP {
         CEP(CEP&&);
         CEP& operator=(CEP&&);
 
-        std::vector<std::vector<uint64_t>> denseFind(int n, const uint64_t * ts, std::vector<uint8_t * > conditions );
-        std::vector<std::vector<uint64_t>> sparseFind(const uint64_t * ts, std::vector<std::vector<uint64_t>> conditions);
+        void denseFind(int n, const uint64_t * ts, std::vector<uint8_t * > conditions, std::vector<std::vector<uint64_t>>& ret );
+        void sparseFind(const uint64_t * ts, const std::vector<std::vector<uint64_t>>& conditions, std::vector<std::vector<uint64_t>>& ret);
 
         // this function will update state as well as return numpy array right away
         py::array_t<uint64_t> do_arrow_batch(std::vector<uintptr_t> arrowArrayPtrs, std::vector<uintptr_t> arrowSchemaPtrs);
@@ -29,6 +29,6 @@ class CEP {
     private:
         std::vector<uint32_t> duration_limits_;
         uint32_t k_; // k is the number of conditions you got
-        std::vector<std::vector<uint64_t>> findTuples(std::vector<std::vector<uint64_t>> lists);
+        void findTuples(const std::vector<std::vector<uint64_t>>& lists, std::vector<std::vector<uint64_t>> & results);
 };
     
