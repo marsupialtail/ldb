@@ -12,8 +12,8 @@ import polars
 test1 = polars.from_dict({"a":np.random.normal(size=(6001215))/ 100})
 arr = test1.to_arrow()["a"].combine_chunks()
 print("length of array", len(arr))
-import ldb, time
-a = ldb.TDigest(100,500)
+import ldbpy, time
+a = ldbpy.TDigest(100,500)
 start = time.time()
 arr._export_to_c(array_ptr, schema_ptr)
 a.add_arrow(array_ptr, schema_ptr)

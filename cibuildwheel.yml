@@ -1,0 +1,9 @@
+platforms:
+  - "linux"
+build:
+  environment:
+    # Any environment variables you need for your build
+  scripts:
+    # Any build scripts you need to run
+    - python setup.py bdist_wheel
+output_dir: wheelhouse/
