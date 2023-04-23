@@ -15,7 +15,7 @@ void find_tuples(std::vector<std::vector<uint64_t>> lists, std::vector<std::vect
     std::queue<std::pair<std::vector<uint64_t>, std::pair<uint64_t, uint64_t>>> q;
     for (int i = 0; i < lists[0].size(); i++)
     {
-        q.push(std::make_pair(std::vector<uint64_t>{lists[0][i]}, std::make_pair(0, lists[0][i])));
+      q.push(std::make_pair(std::vector<uint64_t>{lists[0][i]}, std::make_pair(0, lists[0][i])));
     }
     while (!q.empty()) {
         std::vector<uint64_t> curr_tup = q.front().first;
@@ -104,12 +104,12 @@ void simple(int k, const uint64_t * ts, const std::vector<std::vector<uint64_t>>
         find_tuples(local_ret, expanded_results);
         //print out local_ret
 
-        for (auto vec : local_ret) {
+        /*for (auto vec : local_ret) {
             for (auto i : vec) {
                 std::cout << i << " ";
             }
             std::cout << std::endl;
-        }
+        }*/
 
         for (auto vec : expanded_results) {
             for (int i = 0; i < k; i++) {
@@ -283,9 +283,12 @@ int main()
     conditions_b.push_back(conditions_b_0);
     conditions_b.push_back(conditions_b_1);
     conditions_b.push_back(conditions_b_2);
-    std::vector<std::vector<uint64_t>> res_1;
+    std::vector<std::vector<uint64_t>> res_1(k);
     std::vector<std::vector<uint64_t>> res_2;
     // seg fault error
-    // benchmark1(3, ts_b, conditions_b, res_1);
+    for (int i = 0; i < k; i++) {
+        res_1[i] = std::vector<uint64_t>();
+    }
+    benchmark1(3, ts_b, conditions_b, res_1);
     benchmark2(3, ts_b, conditions_b, res_2);
 }
