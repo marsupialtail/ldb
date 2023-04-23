@@ -11,7 +11,10 @@
 void find_tuples(std::vector<std::vector<uint64_t>> lists, std::vector<std::vector<uint64_t>> & results) {
     uint64_t limit = lists.size();
     std::queue<std::pair<std::vector<uint64_t>, std::pair<uint64_t, uint64_t>>> q;
-    q.push(std::make_pair(std::vector<uint64_t>{lists[0][0]}, std::make_pair(0, lists[0][0])));
+    for (int i = 0; i < lists[0].size(); i++)
+    {
+        q.push(std::make_pair(std::vector<uint64_t>{lists[0][i]}, std::make_pair(0, lists[0][i])));
+    }
     while (!q.empty()) {
         std::vector<uint64_t> curr_tup = q.front().first;
         std::pair<uint64_t, uint64_t> curr_index = q.front().second;
@@ -158,6 +161,7 @@ bool fsmaccept(std::vector<uint64_t> ts_vec) {
     return true;
 }
 
+// Currently not used, replaced by find_tuples
 void productImplement(std::vector<std::vector<uint64_t>> dimvalue,
                     std::vector<std::vector<uint64_t>> &res,
                     int layer,
@@ -188,7 +192,8 @@ void fsm(int k, uint64_t* ts, std::vector<std::vector<uint64_t>> conditions,
    // compute catesian product for condition arrays as index arrays' catesian product
    std::vector<std::vector<uint64_t>> catesian_product;
    std::vector<uint64_t> tmp;
-   productImplement(conditions, catesian_product, 0, tmp);
+   find_tuples(conditions, catesian_product);
+   // productImplement(conditions, catesian_product, 0, tmp);
    // print_vec_vec(catesian_product);
    // printf("xxxxxxxx\n");
    // use the index product to generate ts product, used for FSM input to be filtered
