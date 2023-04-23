@@ -232,6 +232,19 @@ void benchmark2(int k, uint64_t* ts, std::vector<std::vector<uint64_t>> conditio
 }
 
 
+void check_result(std::vector<std::vector<uint64_t>> x, std::vector<std::vector<uint64_t>> y) {
+    for (int i = 0; i < x.size(); i++) {
+        for (int j = 0; j < x[i].size(); j++) {
+            if (x[i][j] != y[j][i]) {
+                printf("FAILED\n");
+                return;
+            }
+        }
+    }
+    printf("PASSED\n");
+}
+
+
 int main()
 {
     // generate a test case for the function simple
@@ -285,10 +298,10 @@ int main()
     conditions_b.push_back(conditions_b_2);
     std::vector<std::vector<uint64_t>> res_1(k);
     std::vector<std::vector<uint64_t>> res_2;
-    // seg fault error
     for (int i = 0; i < k; i++) {
         res_1[i] = std::vector<uint64_t>();
     }
     benchmark1(3, ts_b, conditions_b, res_1);
     benchmark2(3, ts_b, conditions_b, res_2);
+    check_result(res_1, res_2);
 }
