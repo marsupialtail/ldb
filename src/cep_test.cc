@@ -5,6 +5,8 @@
 #include "algorithm"
 #include "cstdint"
 #include "exceptions.h"
+#include <stdio.h>
+#include <chrono>
 
 #define DIFF 5
 
@@ -205,6 +207,30 @@ void fsm(int k, uint64_t* ts, std::vector<std::vector<uint64_t>> conditions,
    }
 }
 
+void benchmark1(int k, uint64_t* ts, std::vector<std::vector<uint64_t>> conditions,
+                std::vector<std::vector<uint64_t>>& ret)
+{
+    auto begin = std::chrono::high_resolution_clock::now();
+    
+    simple(k, ts, conditions, ret);
+    // Stop measuring time and calculate the elapsed time
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    printf("Time measured: %.3f seconds.\n", elapsed.count() * 1e-9);
+}
+
+void benchmark2(int k, uint64_t* ts, std::vector<std::vector<uint64_t>> conditions,
+                std::vector<std::vector<uint64_t>>& ret)
+{
+    auto begin = std::chrono::high_resolution_clock::now();
+    
+    fsm(k, ts, conditions, ret);
+    // Stop measuring time and calculate the elapsed time
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    printf("Time measured: %.3f seconds.\n", elapsed.count() * 1e-9);
+}
+
 
 int main()
 {
@@ -229,7 +255,37 @@ int main()
         std::cout << std::endl;
     }
     std::cout << "---------" << std::endl;
+    print_vec_vec(ret);
+    std::cout << "---------" << std::endl;
     std::vector<std::vector<uint64_t>> ret2;
     fsm(3, ts, conditions, ret2);
     print_vec_vec(ret2);
+    // benchmark
+    uint64_t* ts_b = (uint64_t*) malloc(sizeof(uint64_t) * 10000);
+    for (int i = 0; i < 10000; i++) {
+        ts_b[i] = i;
+    }
+    std::vector<std::vector<uint64_t>> conditions_b;
+    std::vector<uint64_t> conditions_b_0;
+    std::vector<uint64_t> conditions_b_1;
+    std::vector<uint64_t> conditions_b_2;
+    for (int i = 0; i < 10000; i++) {
+        if (i % 2 == 0) {
+            conditions_b_0.push_back(i);
+        }
+        if (i % 3 == 0) {
+            conditions_b_1.push_back(i);
+        }
+        if (i % 5 == 0) {
+            conditions_b_2.push_back(i);
+        }
+    }
+    conditions_b.push_back(conditions_b_0);
+    conditions_b.push_back(conditions_b_1);
+    conditions_b.push_back(conditions_b_2);
+    std::vector<std::vector<uint64_t>> res_1;
+    std::vector<std::vector<uint64_t>> res_2;
+    // seg fault error
+    // benchmark1(3, ts_b, conditions_b, res_1);
+    benchmark2(3, ts_b, conditions_b, res_2);
 }
