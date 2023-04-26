@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS_SHARED=-O2 -g -DAVX2=1 -fopenmp -Wall -shared -std=c++17 -fPIC `python3 -m pybind11 --includes`
+CXXFLAGS_SHARED=-O3 -g -DAVX2=1 -fopenmp -Wall -shared -std=c++17 -fPIC `python3 -m pybind11 --includes`
 CXXFLAGS_EXE=-O2 -g -DAVX2=1 -fopenmp -Wall -std=c++17 `python3 -m pybind11 --includes`
 
 LDFLAGS=-L.

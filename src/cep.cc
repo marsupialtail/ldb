@@ -83,12 +83,12 @@ void CEP::sparseFind(const uint64_t * ts, const std::vector<std::vector<uint64_t
         uint64_t end_time = start_time + duration_limits_[0];
         for (uint32_t i = 1; i < k_; i++) {
             // increment fingers[i] until ts[conditions[i][fingers[i]]] >= start_time
-            while (ts[conditions[i][fingers[i]]] < start_time && fingers[i] < conditions[i].size()) {
+            while (ts[conditions[i][fingers[i]]] < start_time && fingers[i] < conditions[i].size() - 1) {
                 fingers[i] ++;
             }
             start_time = ts[conditions[i][fingers[i]]];
             uint64_t local_finger = fingers[i];
-            while (ts[conditions[i][local_finger]] <= end_time && local_finger < conditions[i].size()) {
+            while (local_finger < conditions[i].size() && ts[conditions[i][local_finger]] <= end_time) {
                 local_ret[i].push_back(conditions[i][local_finger]);
                 local_finger ++;
             }

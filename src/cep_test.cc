@@ -88,15 +88,17 @@ void simple(int k, const uint64_t * ts, const std::vector<std::vector<uint64_t>>
         uint64_t end_time = start_time + DIFF;
         for (int i = 1; i < k; i++) {
             // increment fingers[i] until ts[conditions[i][fingers[i]]] >= start_time
-            while (ts[conditions[i][fingers[i]]] < start_time && fingers[i] < conditions[i].size()) {
+            while (ts[conditions[i][fingers[i]]] < start_time && fingers[i] < conditions[i].size() - 1) {
                 fingers[i] ++;
             }
+
             start_time = ts[conditions[i][fingers[i]]];
             uint64_t local_finger = fingers[i];
-            while (ts[conditions[i][local_finger]] <= end_time && local_finger < conditions[i].size()) {
+            while (local_finger < conditions[i].size() && ts[conditions[i][local_finger]] <= end_time ) {
                 local_ret[i].push_back(conditions[i][local_finger]);
                 local_finger ++;
             }
+            
             end_time = ts[conditions[i][local_finger - 1]] + DIFF;
         }
 
@@ -239,7 +241,7 @@ int main()
     int k = 3;
     uint64_t ts[] = {0, 1, 2, 3, 4, 5, 6};
     std::vector<std::vector<uint64_t>> conditions;
-    conditions.push_back(std::vector<uint64_t>{0, 1});
+    conditions.push_back(std::vector<uint64_t>{0});
     conditions.push_back(std::vector<uint64_t>{1, 4});
     conditions.push_back(std::vector<uint64_t>{2, 5, 6});
     std::vector<std::vector<uint64_t>> ret(k);
@@ -289,6 +291,7 @@ int main()
     for (int i = 0; i < k; i++) {
         res_1[i] = std::vector<uint64_t>();
     }
-    benchmark1(3, ts_b, conditions_b, res_1);
-    benchmark2(3, ts_b, conditions_b, res_2);
+    //benchmark1(3, ts_b, conditions_b, res_1);
+    //benchmark2(3, ts_b, conditions_b, res_2);
+    free(ts_b);
 }
